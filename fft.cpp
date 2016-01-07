@@ -18,7 +18,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include "fftw.h"
+#include "fft.h"
 
 #include <mutex>
 #include <vector>
@@ -30,8 +30,16 @@ namespace
 }
 
 
-FFTW::FFTW(unsigned int FFTLength)
+FFT::FFT(unsigned int FFTLength) :
+    m_outputSize(FFTLength / 2 + 1) // FFTW returns N/2+1
 {
+    m_realPart.resize(m_outputSize);
+    m_imagPart.resize(m_outputSize);
+
+    // make the initial state meaningful
+    std::fill(m_realPart.begin(), m_realPart.end(), 0.f );
+    std::fill(m_imagPart.begin(), m_imagPart.end(), 0.f );
+
     std::vector<float> tempInput(FFTLength);
     std::vector<float> tempReal(FFTLength);
     std::vector<float> tempImag(FFTLength);
@@ -42,19 +50,44 @@ FFTW::FFTW(unsigned int FFTLength)
     dim.os = 1;
 
     std::lock_guard<std::mutex> lock(s_fftwMutex);
-    plan = fftwf_plan_guru_split_dft_r2c(1, &dim, 0, NULL, &tempInput[0], &tempReal[0], &tempImag[0], FFTW_ESTIMATE);
+    m_plan = fftwf_plan_guru_split_dft_r2c(1, &dim, 0, NULL, &tempInput[0], &tempReal[0], &tempImag[0], FFTW_ESTIMATE);
 }
 
 
-FFTW::~FFTW()
+FFT::~FFT()
 {
     std::lock_guard<std::mutex> lock(s_fftwMutex);
-    fftwf_destroy_plan(plan);
+    fftwf_destroy_plan(m_plan);
 }
 
 
-void FFTW::process(const float *input, std::vector<float> &realPart, std::vector<float> &imagPart)
+void FFT::process(const float *input)
 {
     float* nonConstInput = const_cast<float*>(input);   // fftw does not take const input even though the data not be manipulated!
-    fftwf_execute_split_dft_r2c(plan, nonConstInput, &realPart[0], &imagPart[0]);
+    fftwf_execute_split_dft_r2c(m_plan, nonConstInput, &m_realPart[0], &m_imagPart[0]);
+}
+
+
+const std::vector<float>& FFT::realPart()
+{
+    return m_realPart;
+}
+
+
+const std::vector<float>& FFT::imagPart()
+{
+  return m_imagPart;
+}
+
+
+const std::vector<float> &FFT::magnitudeVector()
+{
+    m_magnitudeVector.clear();
+
+    for (std::size_t i = 0; i < m_outputSize; ++i)
+    {
+        m_magnitudeVector.push_back(std::sqrt(m_realPart[i] * m_realPart[i] + m_imagPart[i] * m_imagPart[i]));
+    }
+
+    return m_magnitudeVector;
 }

@@ -89,16 +89,10 @@ void Spectrogram::process()
                        } );
         m_iter += m_FFTSize / 2; // 50% sliding window
 
-        std::vector<float> realPart (m_outputSize, 0.f);
-        std::vector<float> imagPart (m_outputSize, 0.f);
-        m_fft.process(&sampleChunck[0], realPart, imagPart);
+        m_fft.process(&sampleChunck[0]);
 
 
-        std::vector<float> magnitudeVector;
-        for (std::size_t i = 0; i < m_outputSize; ++i)
-        {
-            magnitudeVector.push_back(std::sqrt(realPart[i] * realPart[i] + imagPart[i] * imagPart[i]));
-        }
+        std::vector<float> magnitudeVector = m_fft.magnitudeVector();
 
         for (unsigned int i = 0; i < magnitudeVector.size(); ++i)
         {

@@ -18,24 +18,31 @@
 //
 ////////////////////////////////////////////////////////////
 
-#ifndef FFTW_H
-#define FFTW_H
+#ifndef FFT_H
+#define FFT_H
 
 #include <fftw3.h>
 
 #include <vector> // replace with boost aligned vector for SIMD
 
-class FFTW
+class FFT
 {
 public:
-    FFTW(unsigned int FFTLength);
+    FFT(unsigned int FFTLength);
 
-    ~FFTW();
+    ~FFT();
 
-    void process(const float* input, std::vector<float>& realPart, std::vector<float>& imagPart);
+    void                        process(const float* input);
+    const std::vector<float>&   realPart();
+    const std::vector<float>&   imagPart();
+    const std::vector<float>&   magnitudeVector();
 
 private:
-    fftwf_plan plan;
+    fftwf_plan         m_plan;
+    std::vector<float> m_realPart;
+    std::vector<float> m_imagPart;
+    std::vector<float> m_magnitudeVector;
+    const unsigned int m_outputSize;
 };
 
-#endif // FFTW_H
+#endif // FFT_H

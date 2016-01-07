@@ -28,7 +28,7 @@
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 
-#include "fftw.h"
+#include "fft.h"
 
 #include <vector>
 
@@ -46,7 +46,7 @@ private:
 
     const unsigned int                      m_FFTSize;
     const unsigned int                      m_outputSize;
-    FFTW                                    m_fft;
+    FFT                                     m_fft;
     std::vector<sf::Int16>                  m_samples;
     std::vector<sf::Int16>::const_iterator  m_iter;
     sf::Image                               m_image;

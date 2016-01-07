@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
 # Define sources and executable
 set(EXECUTABLE_NAME "FFTSpectrum")
-set(SOURCE_FILES main.cpp fftw.cpp spectrogram.cpp)
+set(SOURCE_FILES main.cpp fft.cpp spectrogram.cpp)
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 
