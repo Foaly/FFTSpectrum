@@ -50,6 +50,8 @@ int main()
     Spectrogram spectrogram(soundBuffer, FFTSize);
     spectrogram.setPosition(100, 100);
 
+    sf::Vector2f previousMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+
     // run the program as long as the window is open
     while (window.isOpen())
     {
@@ -71,7 +73,28 @@ int main()
                 if (event.key.code == sf::Keyboard::Space)
                   sound.play();
             }
+
+            else if (event.type == sf::Event::MouseWheelScrolled)
+            {
+                if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
+                {
+                    spectrogram.scale(1.f + 0.5f * event.mouseWheelScroll.delta, 1.f);
+                    //std::cout << "mouse x: " << event.mouseWheelScroll.x << std::endl;
+                    //std::cout << "mouse y: " << event.mouseWheelScroll.y << std::endl;
+                }
+
+            }
         }
+
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+        {
+            sf::Vector2f mousePosition(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
+            sf::Vector2f difference = mousePosition - previousMousePos;
+
+            spectrogram.move(difference.x, 0.f);
+        }
+        // save the mouse coordinates
+        previousMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
         spectrogram.process();
 
