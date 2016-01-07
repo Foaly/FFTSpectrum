@@ -70,6 +70,9 @@ Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSiz
     m_x = 0;
 
     m_iter = m_samples.cbegin();
+
+    m_playPositionBar.setSize(sf::Vector2f(1.f, m_outputSize));
+    m_playPositionBar.setFillColor(sf::Color(133, 15, 15));
 }
 
 
@@ -97,7 +100,7 @@ void Spectrogram::process()
         for (unsigned int i = 0; i < magnitudeVector.size(); ++i)
         {
             //std::cout << magnitudeVector[i] << " ";
-            sf::Uint8 intensity = static_cast<sf::Uint8>(magnitudeVector[i] * 255);
+            sf::Uint8 intensity = static_cast<sf::Uint8>(magnitudeVector[i] * 100);
             m_image.setPixel(m_x, magnitudeVector.size() - 1 - i, sf::Color(intensity, intensity, intensity));
         }
         //std::cout << std::endl << std::endl;
@@ -105,7 +108,19 @@ void Spectrogram::process()
         m_texture.update(m_image);
 
         m_x++;
-    }
+      }
+}
+
+
+void Spectrogram::updateBar(float relativePosition)
+{
+    m_playPositionBar.setPosition(m_sprite.getLocalBounds().width * relativePosition, 0.f);
+}
+
+
+sf::FloatRect Spectrogram::getLocalBounds() const
+{
+  return getTransform().transformRect(m_sprite.getLocalBounds());
 }
 
 
@@ -116,4 +131,7 @@ void Spectrogram::draw(sf::RenderTarget& target, sf::RenderStates states) const
 
     // draw the sprite
     target.draw(m_sprite, states);
+
+    // draw the play position bar ontop
+    target.draw(m_playPositionBar, states);
 }

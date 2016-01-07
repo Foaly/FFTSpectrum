@@ -26,6 +26,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/Graphics/Texture.hpp>
 #include <SFML/Graphics/Sprite.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 
 #include "fft.h"
@@ -38,6 +39,10 @@ public:
     Spectrogram(const sf::SoundBuffer& soundbuffer, unsigned int FFTSize);
 
     void process();
+
+    void updateBar(float relativePosition);
+
+    sf::FloatRect        getLocalBounds() const;
 
 
 private:
@@ -53,6 +58,7 @@ private:
     sf::Sprite                              m_sprite;
     sf::Texture                             m_texture;
     int                                     m_x;
+    sf::RectangleShape                      m_playPositionBar;
 };
 
 #endif // SPECTROGRAM_H

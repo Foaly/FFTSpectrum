@@ -71,21 +71,39 @@ int main()
 
                 // play the sound if space was released
                 if (event.key.code == sf::Keyboard::Space)
-                  sound.play();
+                {
+                    if (sound.getStatus() == sf::Sound::Playing)
+                        sound.pause();
+                    else
+                        sound.play();
+                }
             }
 
             else if (event.type == sf::Event::MouseWheelScrolled)
             {
+                // "centered" zooming
                 if (event.mouseWheelScroll.wheel == sf::Mouse::VerticalWheel)
                 {
+                    // calculate the distance between the mouse and the left border of the spectrogram
+                    const sf::Vector2f mousePosition = window.mapPixelToCoords(sf::Mouse::getPosition(window));
+                    sf::FloatRect spectrogramRect = spectrogram.getLocalBounds();
+                    float distance = mousePosition.x - spectrogram.getPosition().x;
+                    // calculate the ration between the mouse and the width of the spectrogram
+                    float ratio = distance / spectrogramRect.width;
+
+                    // scale the spectrogram
                     spectrogram.scale(1.f + 0.5f * event.mouseWheelScroll.delta, 1.f);
-                    //std::cout << "mouse x: " << event.mouseWheelScroll.x << std::endl;
-                    //std::cout << "mouse y: " << event.mouseWheelScroll.y << std::endl;
+
+                    // position spectrogram so that the ratio between the mouse and the width
+                    // of the spectrogram is the same as it was before scrolling
+                    float newDistance = spectrogram.getLocalBounds().width * ratio;
+                    spectrogram.setPosition(mousePosition.x - newDistance, spectrogram.getPosition().y);
                 }
 
             }
         }
 
+        // scrolling
         if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
         {
             sf::Vector2f mousePosition(window.mapPixelToCoords(sf::Mouse::getPosition(window)));
@@ -96,11 +114,18 @@ int main()
         // save the mouse coordinates
         previousMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
+        // do the FFT
         spectrogram.process();
 
-        // clear the window to black
+        if (sound.getStatus() == sf::Sound::Playing)
+        {
+            spectrogram.updateBar(sound.getPlayingOffset().asSeconds() / sound.getBuffer()->getDuration().asSeconds());
+        }
+
+        // clear the window to dark grey
         window.clear(sf::Color(50, 50, 50));
 
+        // draw the spectrogram
         window.draw(spectrogram);
 
         // display the windows content
