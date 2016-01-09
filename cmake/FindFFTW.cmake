@@ -32,15 +32,42 @@
 #  FFTW_INCLUDES    - where to find fftw3.h
 #  FFTW_LIBRARIES   - List of libraries when using FFTW.
 #  FFTW_FOUND       - True if FFTW found.
+#
+
+# Usage example
+# =============
+#
+# Detect and add FFTW
+# set(FFTW_ROOT "/path/to/directory/where/headers_and_compiled_libraries_are")
+# set(CMAKE_MODULE_PATH "/path/to/this/file" ${CMAKE_MODULE_PATH})
+#
+# find_package(FFTW COMPONENTS fftw3f-3 REQUIRED) # here you can also use fftw3-3 or fftw3l-3
+# if(FFTW_FOUND)
+#     include_directories(${FFTW_INCLUDES})
+#     target_link_libraries(${EXECUTABLE_NAME} ${FFTW_LIBRARIES})
+# endif()
+
 
 if (FFTW_INCLUDES)
   # Already in cache, be silent
   set (FFTW_FIND_QUIETLY TRUE)
 endif (FFTW_INCLUDES)
 
+# add the header to the include paths
 find_path (FFTW_INCLUDES fftw3.h ${FFTW_ROOT})
 
-find_library (FFTW_LIBRARIES NAMES libfftw3f-3 PATHS ${FFTW_ROOT})
+# the following for each allows you to specify in the calling script which library you want
+# to link using COMPONENTS (for example fftw3-3, fftw3f-3 or fftw3l-3)
+foreach(FIND_FFTW_COMPONENT ${FFTW_FIND_COMPONENTS})
+  string(TOLOWER ${FIND_FFTW_COMPONENT} FIND_FFTW_COMPONENT_LOWER) # convert to lower case
+  set(FIND_FFTW_COMPONENT_NAME lib${FIND_FFTW_COMPONENT_LOWER}) # add the lib prefix
+
+  # link the library
+  find_library (FFTW_LIBRARIES
+          NAMES ${FIND_FFTW_COMPONENT_NAME}
+          PATHS ${FFTW_ROOT})
+
+endforeach()
 
 MESSAGE(STATUS "Found FFTW 3 in ${FFTW_INCLUDES}")
 
