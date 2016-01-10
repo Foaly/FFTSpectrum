@@ -19,18 +19,31 @@
 ////////////////////////////////////////////////////////////
 
 #include "Application.hpp"
+#include "SettingsParser.hpp"
 
 #include <SFML/Window/Event.hpp>
 
 #include <iostream>
 
+
+namespace
+{
+    bool isPowerOf2(int x)
+    {
+        // check if number is bigger than 1 and exactly on bit is set
+        return (x > 1) && !(x & (x - 1));
+    }
+}
+
+
 Application::Application() :
-    m_window(sf::VideoMode(1280, 720), "FFT Spectrogram")
+    m_window(sf::VideoMode(1280, 720), "FFT Spectrogram"),
+    m_FFTSize(1024)
 {
     m_window.setFramerateLimit(60);
 
     // load a sound
-    if (!m_soundBuffer.loadFromFile("Sweep.wav"))
+    if (!m_soundBuffer.loadFromFile("1000Hz.wav"))
     {
         std::cout << "Could not load Soundfile!" << std::endl;
         // maybe throw exeption
@@ -42,10 +55,9 @@ Application::Application() :
     std::cout << " " << m_soundBuffer.getChannelCount()         << " channels"          << std::endl;
     std::cout << " " << m_soundBuffer.getSampleCount()          << " samples"           << std::endl;
 
-    m_sound = sf::Sound(m_soundBuffer);
+    m_sound.setBuffer(m_soundBuffer);
 
-    const unsigned int FFTSize = 1024;
-    m_spectrogram = std::unique_ptr<Spectrogram>(new Spectrogram(m_soundBuffer, FFTSize));
+    m_spectrogram = std::unique_ptr<Spectrogram>(new Spectrogram(m_soundBuffer, m_FFTSize));
     m_spectrogram->setPosition(100, 100);
 
     m_spectrogram->generate();
@@ -118,12 +130,58 @@ void Application::handleEvents()
             }
 
             // play the sound if space was released
-            if (event.key.code == sf::Keyboard::Space)
+            else if (event.key.code == sf::Keyboard::Space)
             {
                 if (m_sound.getStatus() == sf::Sound::Playing)
                     m_sound.pause();
                 else
                     m_sound.play();
+            }
+
+            else if (event.key.code == sf::Keyboard::L)
+            {
+                SettingsParser settings;
+                if (settings.loadFromFile("settings.txt"))
+                {
+                    std::string filename;
+                    settings.get("filename", filename);
+
+                    int newFFTSize = -1;
+                    settings.get("FFTSize", newFFTSize);
+
+                    if (!filename.empty())
+                    {
+                        if (isPowerOf2(newFFTSize))
+                        {
+                            m_FFTSize = newFFTSize;
+                        }
+                        else
+                        {
+                            std::cout << "The FFTSize has to be a power of 2." << std::endl;
+                        }
+
+                        // try to load the new sound
+                        if (m_soundBuffer.loadFromFile(filename))
+                        {
+                            m_spectrogram = std::unique_ptr<Spectrogram>(new Spectrogram(m_soundBuffer, m_FFTSize));
+                            m_spectrogram->setPosition(100.f, 100.f);
+                            m_spectrogram->generate();
+                        }
+                        else
+                        {
+                            std::cout << "Could not load soundfile with name: " << std::endl;
+                            // maybe throw exeption
+                        }
+                    }
+                    else
+                    {
+                        std::cout << "There was no filename specified in the settings file!" << std::endl;
+                    }
+                }
+                else
+                {
+                    std::cout << "Could not load settings file!" << std::endl;
+                }
             }
         }
 

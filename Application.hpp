@@ -48,6 +48,7 @@ private:
     sf::RenderWindow                m_window;
     sf::SoundBuffer                 m_soundBuffer;
     sf::Sound                       m_sound;
+    unsigned int                    m_FFTSize;
     std::unique_ptr<Spectrogram>    m_spectrogram;
     sf::Vector2f                    m_previousMousePos;
     bool                            m_hasFocus;

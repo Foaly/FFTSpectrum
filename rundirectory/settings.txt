@@ -1,0 +1,12 @@
+# if a line starts with a '#' the line is a comment and will be ignored
+# blank lines will also be ignored
+
+# the syntax is
+# key = value
+
+# filename = 440Hz.wav
+# filename = 1000Hz.wav
+ filename = Sweep.wav
+# filename = Mandelbrot.wav
+
+FFTSize = 1024
