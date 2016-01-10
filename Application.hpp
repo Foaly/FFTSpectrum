@@ -18,10 +18,40 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include "Application.hpp"
+#ifndef FFTSPECTRUM_APPLICATION_HPP
+#define FFTSPECTRUM_APPLICATION_HPP
 
-int main()
+#include "spectrogram.h"
+
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Audio/SoundBuffer.hpp>
+#include <SFML/Audio/Sound.hpp>
+
+#include <memory>
+
+class Application
 {
-    Application app;
-    return app.run();
-}
+public:
+    Application();
+
+    int run();
+
+private:
+
+    void handleEvents();
+
+    void update();
+
+    void draw();
+
+
+    sf::RenderWindow                m_window;
+    sf::SoundBuffer                 m_soundBuffer;
+    sf::Sound                       m_sound;
+    std::unique_ptr<Spectrogram>    m_spectrogram;
+    sf::Vector2f                    m_previousMousePos;
+    bool                            m_hasFocus;
+};
+
+
+#endif //FFTSPECTRUM_APPLICATION_HPP

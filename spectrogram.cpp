@@ -74,7 +74,7 @@ Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSiz
 
     m_magnitudes.reserve(m_numberOfRepeats);
 
-    m_currentX = 0.f;
+    m_currentX = 0;
 }
 
 
@@ -154,4 +154,3 @@ void Spectrogram::draw(sf::RenderTarget& target, sf::RenderStates states) const
     // draw the play position bar ontop
     target.draw(m_playPositionBar, states);
 }
-
