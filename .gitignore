@@ -1,0 +1,17 @@
+# ignore CLion directory
+.idea/*
+
+# runtime binaries
+*.dll
+*.exe
+
+# CMake user file
+*.txt.user
+
+# don't commit binary files
+*.png
+*.jpg
+*.bmp
+
+*.wav
+*.mp3
