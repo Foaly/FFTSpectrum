@@ -18,3 +18,5 @@ License
 -------
 
 The code is released under the GPL 3 license. Take a look at the LICENSE file for more information.
+
+The example sounds are licensed under the [Do what you want, but think about the omen](https://www.youtube.com/watch?v=b-_wE0mJU5Y) License unless stated otherwise. Please refer to `rundirectory/LICENSE.md` for more details.

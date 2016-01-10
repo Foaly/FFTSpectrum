@@ -16,9 +16,10 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 set(EXECUTABLE_NAME "FFTSpectrum")
 set(SOURCE_FILES src/main.cpp
                  src/Application.cpp
-                 src/fft.cpp
-                 src/spectrogram.cpp
-                 src/SettingsParser.cpp)
+                 src/FFT.cpp
+                 src/Spectrogram.cpp
+                 src/SettingsParser.cpp
+                 src/Interpolation.cpp)
 add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 

@@ -20,30 +20,10 @@
 
 #include "Spectrogram.hpp"
 
+#include "Interpolation.hpp"
+
 #include <iostream>
 #include <algorithm>
-
-namespace
-{
-    /**
-     * @brief windowFunction This is the window function for the FFT. It interpolates
-     *                       in a triangle that looks like this:
-     *                       1_|
-     *                         |   /\
-     *                         |  /  \
-     *                         | /    \
-     *                       0_|/______\__
-     *                         0   0.5  1.0
-     *
-     * @param amount A value between [0, 1] (corresponds to the x-axis)
-     * @return The interpolated value (corresponds to the y-axis)
-     */
-    float windowFunction (float amount)
-    {
-        return -(std::abs(amount - 0.5f) * 2.f) + 1;
-    }
-}
-
 
 Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSize) :
     m_FFTSize(FFTSize),
@@ -76,7 +56,6 @@ Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSiz
 
     m_currentX = 0;
 }
-
 
 
 void Spectrogram::generate()
@@ -119,8 +98,20 @@ void Spectrogram::updateImage()
         for (unsigned int i = 0; i < magnitudeVector.size(); ++i)
         {
             //std::cout << magnitudeVector[i] << " ";
-            sf::Uint8 intensity = static_cast<sf::Uint8>(magnitudeVector[i] / m_maxMagnitude * 255);
-            m_image.setPixel(m_currentX, magnitudeVector.size() - 1 - i, sf::Color(intensity, intensity, intensity));
+
+            // normalized magnitude in range [0, 1]
+            float amount = magnitudeVector[i] / m_maxMagnitude;
+
+            // black and white
+            //sf::Uint8 intensity = static_cast<sf::Uint8>(amount * 255);
+            //sf::Color color = sf::Color(intensity, intensity, intensity);
+
+            // sunset (white-yellow-red-pink-blue-black)
+            // interpolates the hue in range 210 (blue) to 100 (yellow/greenish) with a wrap around
+            float hue = std::fmod(linearInterpolation(210.f, 460.f, amount), 360.f);
+            sf::Color color = HSLtoRGB(hue, 1.f, amount);
+
+            m_image.setPixel(m_currentX, magnitudeVector.size() - 1 - i, color);
         }
         //std::cout << std::endl << std::endl;
 
