@@ -21,7 +21,7 @@
 #ifndef FFTSPECTRUM_APPLICATION_HPP
 #define FFTSPECTRUM_APPLICATION_HPP
 
-#include "spectrogram.h"
+#include "Spectrogram.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>

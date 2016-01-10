@@ -29,7 +29,7 @@
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 
-#include "fft.h"
+#include "FFT.hpp"
 
 #include <vector>
 

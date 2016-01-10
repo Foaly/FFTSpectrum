@@ -18,7 +18,7 @@
 //
 ////////////////////////////////////////////////////////////
 
-#include "spectrogram.h"
+#include "Spectrogram.hpp"
 
 #include <iostream>
 #include <algorithm>

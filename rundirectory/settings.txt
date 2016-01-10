@@ -6,7 +6,7 @@
 
 # filename = 440Hz.wav
 # filename = 1000Hz.wav
- filename = Sweep.wav
+ filename = wobbly-sweep.flac
 # filename = Mandelbrot.wav
 
 FFTSize = 1024
