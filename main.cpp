@@ -50,6 +50,8 @@ int main()
     Spectrogram spectrogram(soundBuffer, FFTSize);
     spectrogram.setPosition(100, 100);
 
+    spectrogram.generate();
+
     sf::Vector2f previousMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
     // run the program as long as the window is open
@@ -115,7 +117,8 @@ int main()
         previousMousePos = window.mapPixelToCoords(sf::Mouse::getPosition(window));
 
         // do the FFT
-        spectrogram.process();
+        spectrogram.updateImage();
+        spectrogram.updateImage();
 
         if (sound.getStatus() == sf::Sound::Playing)
         {

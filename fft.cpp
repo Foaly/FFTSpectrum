@@ -21,8 +21,7 @@
 #include "fft.h"
 
 #include <mutex>
-#include <vector>
-
+#include <cmath>
 
 namespace
 {
@@ -39,6 +38,8 @@ FFT::FFT(unsigned int FFTLength) :
     // make the initial state meaningful
     std::fill(m_realPart.begin(), m_realPart.end(), 0.f );
     std::fill(m_imagPart.begin(), m_imagPart.end(), 0.f );
+
+    m_magnitudeVector.reserve(m_outputSize);
 
     std::vector<float> tempInput(FFTLength);
     std::vector<float> tempReal(FFTLength);

@@ -21,6 +21,7 @@
 #include "spectrogram.h"
 
 #include <iostream>
+#include <algorithm>
 
 namespace
 {
@@ -47,7 +48,8 @@ namespace
 Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSize) :
     m_FFTSize(FFTSize),
     m_outputSize(m_FFTSize / 2 + 1), // FFTW returns N/2+1
-    m_fft(m_FFTSize)
+    m_fft(m_FFTSize),
+    m_maxMagnitude(0.f)
 {
     // get the samples as ints
     m_samples = std::vector<sf::Int16>(soundBuffer.getSamples(), soundBuffer.getSamples() + soundBuffer.getSampleCount());
@@ -56,9 +58,9 @@ Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSiz
     m_samples.insert(m_samples.end(), remainder, 0);
 
     // calculate how many times the FFT will be called
-    unsigned int numberOfRepeats = m_samples.size() / (FFTSize / 2);
+    m_numberOfRepeats = m_samples.size() / (FFTSize / 2);
 
-    m_image.create(numberOfRepeats, m_outputSize);
+    m_image.create(m_numberOfRepeats, m_outputSize);
 
     if (!m_texture.loadFromImage(m_image))
     {
@@ -67,48 +69,65 @@ Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSiz
     }
     m_sprite.setTexture(m_texture);
 
-    m_x = 0;
-
-    m_iter = m_samples.cbegin();
-
     m_playPositionBar.setSize(sf::Vector2f(1.f, m_outputSize));
     m_playPositionBar.setFillColor(sf::Color(133, 15, 15));
+
+    m_magnitudes.reserve(m_numberOfRepeats);
+
+    m_currentX = 0.f;
 }
 
 
-void Spectrogram::process()
+
+void Spectrogram::generate()
 {
-    if (m_iter + m_FFTSize < m_samples.end()) // maybe this should be <=
+    auto sampleIterator = m_samples.cbegin();
+    for (unsigned int i = 0; i < m_numberOfRepeats; ++i)
     {
-        int i = 0;
+        int currentSampleIndex = 0;
         std::vector<float> sampleChunck(m_FFTSize);
-        std::transform(m_iter, m_iter + m_FFTSize, sampleChunck.begin(),
-                       [&i, this] (sf::Int16 sample)
+        std::transform(sampleIterator, sampleIterator + m_FFTSize, sampleChunck.begin(),
+                       [&currentSampleIndex, this] (sf::Int16 sample)
                        {
                            float scaledFloat = static_cast<float>(sample) / 32767.f;
-                           scaledFloat *= windowFunction(static_cast<float>(i) / m_FFTSize);
-                           ++i;
+                           scaledFloat *= windowFunction(static_cast<float>(currentSampleIndex) / m_FFTSize);
+                           ++currentSampleIndex;
                            return scaledFloat;
                        } );
-        m_iter += m_FFTSize / 2; // 50% sliding window
+        sampleIterator += m_FFTSize / 2; // 50% sliding window
 
         m_fft.process(&sampleChunck[0]);
 
 
-        std::vector<float> magnitudeVector = m_fft.magnitudeVector();
+        m_magnitudes.push_back(m_fft.magnitudeVector());
+
+        // find the max element
+        auto minmax = std::minmax_element(m_magnitudes.back().begin(), m_magnitudes.back().end());
+        // check if it's bigger than any previous one
+        if (*minmax.second > m_maxMagnitude)
+            m_maxMagnitude = *minmax.second;
+    }
+}
+
+
+void Spectrogram::updateImage()
+{
+    if (m_currentX < m_magnitudes.size())
+    {
+        std::vector<float>& magnitudeVector = m_magnitudes[m_currentX];
 
         for (unsigned int i = 0; i < magnitudeVector.size(); ++i)
         {
             //std::cout << magnitudeVector[i] << " ";
-            sf::Uint8 intensity = static_cast<sf::Uint8>(magnitudeVector[i] * 100);
-            m_image.setPixel(m_x, magnitudeVector.size() - 1 - i, sf::Color(intensity, intensity, intensity));
+            sf::Uint8 intensity = static_cast<sf::Uint8>(magnitudeVector[i] / m_maxMagnitude * 255);
+            m_image.setPixel(m_currentX, magnitudeVector.size() - 1 - i, sf::Color(intensity, intensity, intensity));
         }
         //std::cout << std::endl << std::endl;
 
         m_texture.update(m_image);
 
-        m_x++;
-      }
+        ++m_currentX;
+    }
 }
 
 
@@ -135,3 +154,4 @@ void Spectrogram::draw(sf::RenderTarget& target, sf::RenderStates states) const
     // draw the play position bar ontop
     target.draw(m_playPositionBar, states);
 }
+

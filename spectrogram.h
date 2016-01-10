@@ -38,7 +38,9 @@ class Spectrogram : public sf::Drawable, public sf::Transformable
 public:
     Spectrogram(const sf::SoundBuffer& soundbuffer, unsigned int FFTSize);
 
-    void process();
+    void generate();
+
+    void updateImage();
 
     void updateBar(float relativePosition);
 
@@ -53,12 +55,14 @@ private:
     const unsigned int                      m_outputSize;
     FFT                                     m_fft;
     std::vector<sf::Int16>                  m_samples;
-    std::vector<sf::Int16>::const_iterator  m_iter;
+    unsigned int                            m_numberOfRepeats;
     sf::Image                               m_image;
     sf::Sprite                              m_sprite;
     sf::Texture                             m_texture;
-    int                                     m_x;
     sf::RectangleShape                      m_playPositionBar;
+    float                                   m_maxMagnitude;
+    std::vector<std::vector<float>>         m_magnitudes;
+    unsigned int                            m_currentX;
 };
 
 #endif // SPECTROGRAM_H
