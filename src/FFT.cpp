@@ -22,10 +22,13 @@
 
 #include <mutex>
 #include <cmath>
+#include <numeric>
+#include <algorithm>
 
 namespace
 {
     std::mutex s_fftwMutex;
+    const float epsilon = std::numeric_limits<float>::epsilon();
 }
 
 
@@ -66,6 +69,8 @@ void FFT::process(const float *input)
 {
     float* nonConstInput = const_cast<float*>(input);   // fftw does not take const input even though the data not be manipulated!
     fftwf_execute_split_dft_r2c(m_plan, nonConstInput, &m_realPart[0], &m_imagPart[0]);
+    m_magnitudeVector.clear();
+    m_logarithmicMagnitudeVector.clear();
 }
 
 
@@ -83,12 +88,32 @@ const std::vector<float>& FFT::imagPart()
 
 const std::vector<float> &FFT::magnitudeVector()
 {
-    m_magnitudeVector.clear();
-
-    for (std::size_t i = 0; i < m_outputSize; ++i)
+    if (m_magnitudeVector.size() == 0)
     {
-        m_magnitudeVector.push_back(std::sqrt(m_realPart[i] * m_realPart[i] + m_imagPart[i] * m_imagPart[i]));
+        for (std::size_t i = 0; i < m_outputSize; ++i)
+        {
+            m_magnitudeVector.push_back(std::sqrt(m_realPart[i] * m_realPart[i] + m_imagPart[i] * m_imagPart[i]));
+        }
     }
 
     return m_magnitudeVector;
+}
+
+
+const std::vector<float> &FFT::logarithmicMagnitudeVector()
+{
+    // update the magnitude vector
+    magnitudeVector();
+
+    if (m_logarithmicMagnitudeVector.size() == 0)
+    {
+        m_logarithmicMagnitudeVector.resize(m_magnitudeVector.size(), 0.f);
+        std::transform(m_magnitudeVector.begin(), m_magnitudeVector.end(), m_logarithmicMagnitudeVector.begin(),
+                       [] (float magnitude)
+                       {
+                           return std::log10(magnitude / 100 + epsilon); // log of 0 is undefined
+                       });
+    }
+
+    return m_logarithmicMagnitudeVector;
 }

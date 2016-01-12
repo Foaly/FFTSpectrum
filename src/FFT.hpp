@@ -36,12 +36,14 @@ public:
     const std::vector<float>&   realPart();
     const std::vector<float>&   imagPart();
     const std::vector<float>&   magnitudeVector();
+    const std::vector<float>&   logarithmicMagnitudeVector();
 
 private:
     fftwf_plan         m_plan;
     std::vector<float> m_realPart;
     std::vector<float> m_imagPart;
     std::vector<float> m_magnitudeVector;
+    std::vector<float> m_logarithmicMagnitudeVector;
     const unsigned int m_outputSize;
 };
 

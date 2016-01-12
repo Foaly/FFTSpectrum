@@ -29,7 +29,8 @@ Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSiz
     m_FFTSize(FFTSize),
     m_outputSize(m_FFTSize / 2 + 1), // FFTW returns N/2+1
     m_fft(m_FFTSize),
-    m_maxMagnitude(0.f)
+    m_maxMagnitude(0.f),
+    m_minMagnitude(0.f)
 {
     // get the samples as ints
     m_samples = std::vector<sf::Int16>(soundBuffer.getSamples(), soundBuffer.getSamples() + soundBuffer.getSampleCount());
@@ -78,13 +79,15 @@ void Spectrogram::generate()
         m_fft.process(&sampleChunck[0]);
 
 
-        m_magnitudes.push_back(m_fft.magnitudeVector());
+        m_magnitudes.push_back(m_fft.logarithmicMagnitudeVector());
 
         // find the max element
         auto minmax = std::minmax_element(m_magnitudes.back().begin(), m_magnitudes.back().end());
         // check if it's bigger than any previous one
         if (*minmax.second > m_maxMagnitude)
             m_maxMagnitude = *minmax.second;
+        if (*minmax.first < m_minMagnitude)
+            m_minMagnitude = *minmax.first;
     }
 }
 
@@ -100,7 +103,10 @@ void Spectrogram::updateImage()
             //std::cout << magnitudeVector[i] << " ";
 
             // normalized magnitude in range [0, 1]
-            float amount = magnitudeVector[i] / m_maxMagnitude;
+            // linear
+            //float amount = magnitudeVector[i] / m_maxMagnitude;
+            // logarithmic
+            float amount = (magnitudeVector[i] - m_minMagnitude) / (m_maxMagnitude - m_minMagnitude);
 
             // black and white
             //sf::Uint8 intensity = static_cast<sf::Uint8>(amount * 255);

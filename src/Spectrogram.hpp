@@ -61,6 +61,7 @@ private:
     sf::Texture                             m_texture;
     sf::RectangleShape                      m_playPositionBar;
     float                                   m_maxMagnitude;
+    float                                   m_minMagnitude;
     std::vector<std::vector<float>>         m_magnitudes;
     unsigned int                            m_currentX;
 };

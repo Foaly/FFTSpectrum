@@ -33,7 +33,7 @@ sf::Color HSLtoRGB (float hue, float saturation, float lightness)
 {
     const float chroma = (1.f - std::abs(2.f * lightness - 1.f)) * saturation;
     const float H1     = hue / 60.f;
-    const float X      = chroma * (1.f - std::abs(std::fmod(H1, 2) - 1.f));
+    const float X      = chroma * (1.f - std::abs(std::fmod(H1, 2.f) - 1.f));
 
     float r, g, b;
 

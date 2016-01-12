@@ -119,7 +119,7 @@ void Application::handleEvents()
         else if (event.type == sf::Event::Resized)
         {
             // update the view to the new size of the window
-            sf::FloatRect visibleArea(0, 0, event.size.width, event.size.height);
+            sf::FloatRect visibleArea(0.f, 0.f, event.size.width, event.size.height);
             m_window.setView(sf::View(visibleArea));
         }
 
@@ -169,7 +169,7 @@ void Application::handleEvents()
                         }
                         else
                         {
-                            std::cout << "Could not load soundfile with name: " << std::endl;
+                            std::cout << "Could not load soundfile with name: " << filename << std::endl;
                             // maybe throw exeption
                         }
                     }
