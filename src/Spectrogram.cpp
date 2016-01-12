@@ -39,7 +39,8 @@ Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSiz
     m_samples.insert(m_samples.end(), remainder, 0);
 
     // calculate how many times the FFT will be called
-    m_numberOfRepeats = m_samples.size() / (FFTSize / 2);
+    // -1 to avoid out of bounds reading on last iteration because of our 50% sliding window
+    m_numberOfRepeats = m_samples.size() / (FFTSize / 2) - 1;
 
     m_image.create(m_numberOfRepeats, m_outputSize);
 
