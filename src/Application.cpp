@@ -62,6 +62,10 @@ Application::Application() :
 
     m_spectrogram->generate();
 
+    m_playProgressBar.setPosition(m_spectrogram->getPosition());
+    m_playProgressBar.setSize(sf::Vector2f(2.f, m_spectrogram->getLocalBounds().height));
+    m_playProgressBar.setFillColor(sf::Color(133, 15, 15)); // dark red
+
     // save the initial mouse position
     m_previousMousePos = m_window.mapPixelToCoords(sf::Mouse::getPosition(m_window));
 
@@ -136,6 +140,8 @@ void Application::handleEvents()
                     m_sound.pause();
                 else
                     m_sound.play();
+
+                updatePlayProgressBar();
             }
 
             else if (event.key.code == sf::Keyboard::L)
@@ -204,6 +210,8 @@ void Application::handleEvents()
                 // of the spectrogram is the same as it was before scrolling
                 float newDistance = m_spectrogram->getLocalBounds().width * ratio;
                 m_spectrogram->setPosition(mousePosition.x - newDistance, m_spectrogram->getPosition().y);
+
+                updatePlayProgressBar();
             }
         }
     }
@@ -221,6 +229,8 @@ void Application::update()
             sf::Vector2f difference = mousePosition - m_previousMousePos;
 
             m_spectrogram->move(difference.x, 0.f);
+
+            updatePlayProgressBar();
         }
     }
 
@@ -233,7 +243,7 @@ void Application::update()
 
     if (m_sound.getStatus() == sf::Sound::Playing)
     {
-        m_spectrogram->updateBar(m_sound.getPlayingOffset().asSeconds() / m_sound.getBuffer()->getDuration().asSeconds());
+        updatePlayProgressBar();
     }
 }
 
@@ -246,6 +256,18 @@ void Application::draw()
     // draw the spectrogram
     m_window.draw(*m_spectrogram);
 
+    // draw the play progress bar
+    m_window.draw(m_playProgressBar);
+
     // display the windows content
     m_window.display();
+}
+
+
+void Application::updatePlayProgressBar()
+{
+    auto position = m_spectrogram->getPosition();
+    position.x += m_spectrogram->getLocalBounds().width * m_sound.getPlayingOffset().asSeconds() / m_sound.getBuffer()->getDuration().asSeconds();
+
+    m_playProgressBar.setPosition(position);
 }

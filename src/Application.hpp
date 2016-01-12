@@ -24,6 +24,7 @@
 #include "Spectrogram.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Audio/SoundBuffer.hpp>
 #include <SFML/Audio/Sound.hpp>
 
@@ -44,12 +45,15 @@ private:
 
     void draw();
 
+    void updatePlayProgressBar();
+
 
     sf::RenderWindow                m_window;
     sf::SoundBuffer                 m_soundBuffer;
     sf::Sound                       m_sound;
     unsigned int                    m_FFTSize;
     std::unique_ptr<Spectrogram>    m_spectrogram;
+    sf::RectangleShape              m_playProgressBar;
     sf::Vector2f                    m_previousMousePos;
     bool                            m_hasFocus;
 };

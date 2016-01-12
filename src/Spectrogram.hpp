@@ -42,8 +42,6 @@ public:
 
     void updateImage();
 
-    void updateBar(float relativePosition);
-
     sf::FloatRect        getLocalBounds() const;
 
 
@@ -59,7 +57,6 @@ private:
     sf::Image                               m_image;
     sf::Sprite                              m_sprite;
     sf::Texture                             m_texture;
-    sf::RectangleShape                      m_playPositionBar;
     float                                   m_maxMagnitude;
     float                                   m_minMagnitude;
     std::vector<std::vector<float>>         m_magnitudes;
