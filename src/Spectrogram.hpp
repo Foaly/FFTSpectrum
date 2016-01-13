@@ -30,6 +30,7 @@
 #include <SFML/Audio/SoundBuffer.hpp>
 
 #include "FFT.hpp"
+#include "AlignedVector.hpp"
 
 #include <vector>
 
@@ -59,7 +60,7 @@ private:
     sf::Texture                             m_texture;
     float                                   m_maxMagnitude;
     float                                   m_minMagnitude;
-    std::vector<std::vector<float>>         m_magnitudes;
+    AlignedVector<AlignedVector<float>>     m_magnitudes;
     unsigned int                            m_currentX;
 };
 

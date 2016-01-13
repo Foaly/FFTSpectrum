@@ -44,3 +44,8 @@ if(FFTW_FOUND)
     include_directories(${FFTW_INCLUDES})
     target_link_libraries(${EXECUTABLE_NAME} ${FFTW_LIBRARIES})
 endif()
+
+
+# Detect and add Boost
+set(BOOST_INCLUDE "C:/Libraries/boost_1_60_0")
+include_directories(${BOOST_INCLUDE})

@@ -23,7 +23,7 @@
 
 #include <fftw3.h>
 
-#include <vector> // replace with boost aligned vector for SIMD
+#include "AlignedVector.hpp"
 
 class FFT
 {
@@ -32,19 +32,19 @@ public:
 
     ~FFT();
 
-    void                        process(const float* input);
-    const std::vector<float>&   realPart();
-    const std::vector<float>&   imagPart();
-    const std::vector<float>&   magnitudeVector();
-    const std::vector<float>&   logarithmicMagnitudeVector();
+    void                          process(const float* input);
+    const AlignedVector<float>&   realPart();
+    const AlignedVector<float>&   imagPart();
+    const AlignedVector<float>&   magnitudeVector();
+    const AlignedVector<float>&   logarithmicMagnitudeVector();
 
 private:
-    fftwf_plan         m_plan;
-    std::vector<float> m_realPart;
-    std::vector<float> m_imagPart;
-    std::vector<float> m_magnitudeVector;
-    std::vector<float> m_logarithmicMagnitudeVector;
-    const unsigned int m_outputSize;
+    fftwf_plan              m_plan;
+    AlignedVector<float>    m_realPart;
+    AlignedVector<float>    m_imagPart;
+    AlignedVector<float>    m_magnitudeVector;
+    AlignedVector<float>    m_logarithmicMagnitudeVector;
+    const unsigned int      m_outputSize;
 };
 
 #endif // FFT_H

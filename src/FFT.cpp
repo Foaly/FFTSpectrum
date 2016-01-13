@@ -44,9 +44,9 @@ FFT::FFT(unsigned int FFTLength) :
 
     m_magnitudeVector.reserve(m_outputSize);
 
-    std::vector<float> tempInput(FFTLength);
-    std::vector<float> tempReal(FFTLength);
-    std::vector<float> tempImag(FFTLength);
+    AlignedVector<float> tempInput(FFTLength);
+    AlignedVector<float> tempReal(FFTLength);
+    AlignedVector<float> tempImag(FFTLength);
 
     fftwf_iodim dim;
     dim.n  = FFTLength;
@@ -74,19 +74,19 @@ void FFT::process(const float *input)
 }
 
 
-const std::vector<float>& FFT::realPart()
+const AlignedVector<float>& FFT::realPart()
 {
     return m_realPart;
 }
 
 
-const std::vector<float>& FFT::imagPart()
+const AlignedVector<float>& FFT::imagPart()
 {
   return m_imagPart;
 }
 
 
-const std::vector<float> &FFT::magnitudeVector()
+const AlignedVector<float> &FFT::magnitudeVector()
 {
     if (m_magnitudeVector.size() == 0)
     {
@@ -100,7 +100,7 @@ const std::vector<float> &FFT::magnitudeVector()
 }
 
 
-const std::vector<float> &FFT::logarithmicMagnitudeVector()
+const AlignedVector<float> &FFT::logarithmicMagnitudeVector()
 {
     // update the magnitude vector
     magnitudeVector();

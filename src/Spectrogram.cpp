@@ -19,8 +19,9 @@
 ////////////////////////////////////////////////////////////
 
 #include "Spectrogram.hpp"
-
 #include "Interpolation.hpp"
+
+#include <SFML/System/Clock.hpp>
 
 #include <iostream>
 #include <algorithm>
@@ -63,7 +64,7 @@ void Spectrogram::generate()
     for (unsigned int i = 0; i < m_numberOfRepeats; ++i)
     {
         int currentSampleIndex = 0;
-        std::vector<float> sampleChunck(m_FFTSize);
+        AlignedVector<float> sampleChunck(m_FFTSize);
         std::transform(sampleIterator, sampleIterator + m_FFTSize, sampleChunck.begin(),
                        [&currentSampleIndex, this] (sf::Int16 sample)
                        {
@@ -74,7 +75,9 @@ void Spectrogram::generate()
                        } );
         sampleIterator += m_FFTSize / 2; // 50% sliding window
 
+        sf::Clock clock;
         m_fft.process(&sampleChunck[0]);
+        std::cout << clock.getElapsedTime().asMicroseconds() << " " << std::flush;
 
 
         m_magnitudes.push_back(m_fft.logarithmicMagnitudeVector());
@@ -94,7 +97,7 @@ void Spectrogram::updateImage()
 {
     if (m_currentX < m_magnitudes.size())
     {
-        std::vector<float>& magnitudeVector = m_magnitudes[m_currentX];
+        AlignedVector<float>& magnitudeVector = m_magnitudes[m_currentX];
 
         for (unsigned int i = 0; i < magnitudeVector.size(); ++i)
         {
