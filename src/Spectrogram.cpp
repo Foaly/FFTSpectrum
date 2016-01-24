@@ -24,6 +24,7 @@
 
 #include <iostream>
 #include <algorithm>
+#include <cmath>
 
 Spectrogram::Spectrogram(const sf::SoundBuffer &soundBuffer, unsigned int FFTSize) :
     m_FFTSize(FFTSize),

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.3)
+cmake_minimum_required(VERSION 3.2)
 project(FFTSpectrum)
 
 
@@ -25,9 +25,9 @@ add_executable(${EXECUTABLE_NAME} ${SOURCE_FILES})
 
 # Detect and add SFML
 set(SFML_ROOT "C:/Libraries/SFML-2.3.2-vc12")
-set(CMAKE_MODULE_PATH "${SFML_ROOT}/cmake/modules" ${CMAKE_MODULE_PATH})
-#Find any version 2.X of SFML
-#See the FindSFML.cmake file for additional details and instructions
+set(CMAKE_MODULE_PATH " ${CMAKE_MODULE_PATH} ${SFML_ROOT}/cmake/modules")
+# Find any version 2.X of SFML
+# See the FindSFML.cmake file for additional details and instructions
 find_package(SFML 2 COMPONENTS system window graphics network audio REQUIRED)
 if(SFML_FOUND)
     include_directories(${SFML_INCLUDE_DIR})
@@ -37,7 +37,7 @@ endif()
 
 # Detect and add FFTW
 set(FFTW_ROOT "C:/Libraries/fftw-3.3.4-dll32")
-set(CMAKE_MODULE_PATH "F:/FFTSpectrum/cmake" ${CMAKE_MODULE_PATH})
+set(CMAKE_MODULE_PATH "${CMAKE_MODULE_PATH} F:/FFTSpectrum/cmake")
 # Find FFTW 3
 find_package(FFTW COMPONENTS fftw3f-3 REQUIRED)
 if(FFTW_FOUND)

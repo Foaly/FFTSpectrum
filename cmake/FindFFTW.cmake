@@ -65,11 +65,13 @@ foreach(FIND_FFTW_COMPONENT ${FFTW_FIND_COMPONENTS})
   # link the library
   find_library (FFTW_LIBRARIES
           NAMES ${FIND_FFTW_COMPONENT_NAME}
-          PATHS ${FFTW_ROOT})
+          PATH_SUFFIXES lib64 lib
+          PATHS "/usr/local/lib" ${FFTW_ROOT})
 
 endforeach()
 
 MESSAGE(STATUS "Found FFTW 3 in ${FFTW_INCLUDES}")
+MESSAGE(STATUS "FFTW 3 Library: ${FFTW_LIBRARIES}")
 
 # handle the QUIETLY and REQUIRED arguments and set FFTW_FOUND to TRUE if
 # all listed variables are TRUE
